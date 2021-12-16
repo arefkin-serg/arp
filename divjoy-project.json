@@ -986,12 +986,11 @@
         },
         {
           "type": "instance",
-          "componentId": 9272542,
-          "id": 1852119,
-          "attributes": "{\n\t// Background\n  // default, light, primary, secondary,\n  // inherit, transparent\n  bgColor: \"default\",\n  // normal, medium, large\n  size: \"medium\",\n  // Background image URL\n  bgImage: \"\",\n  // Background image opacity (0-1)\n  bgImageOpacity: 1,\n  title: \"Pricing\",\n  subtitle: \"Choose the plan that makes sense for you. All plans include a 14-day free trial.\",\n  // Pricing data is in the \"code\" section below\n}",
+          "componentId": 6480398,
+          "id": 2616874,
+          "attributes": "{\n\t// Background\n  // default, light, primary, secondary,\n  // inherit, transparent\n  bgColor: \"light\",\n  // normal, medium, large\n  size: \"normal\",\n  // Background image URL\n  bgImage: \"\",\n  // Background image opacity (0-1)\n  bgImageOpacity: 1,\n  // Text content\n  title: \"\",\n  subtitle: \"\",\n  // Client data is in the \"code\" section below\n}",
           "isVisible": true,
-          "children": [],
-          "libraryName": "PricingSection"
+          "children": []
         },
         {
           "type": "instance",
@@ -1281,6 +1280,113 @@
       "nameLibrary": "",
       "description": "",
       "code": ""
+    },
+    {
+      "type": "component",
+      "id": 6480398,
+      "name": "ClientsSection",
+      "code": "  const items = [\n    {\n      name: \"Instagram\",\n      image: \"https://uploads.divjoy.com/logo-instagram.svg\",\n      width: \"150px\",\n    },\n    {\n      name: \"Slack\",\n      image: \"https://uploads.divjoy.com/logo-slack.svg\",\n      width: \"135px\",\n    },\n    {\n      name: \"Tinder\",\n      image: \"https://uploads.divjoy.com/logo-tinder.svg\",\n      width: \"90px\",\n    },\n    {\n      name: \"Spotify\",\n      image: \"https://uploads.divjoy.com/logo-spotify.svg\",\n      width: \"135px\",\n    },\n  ];\n",
+      "children": [
+        {
+          "type": "instance",
+          "componentId": 9534547,
+          "id": 8197487,
+          "attributes": "{\n\tbgColor: props.bgColor,\n  size: props.size,\n  bgImage: props.bgImage,\n  bgImageOpacity: props.bgImageOpacity,\n}",
+          "children": [
+            {
+              "type": "instance",
+              "componentId": 6094171,
+              "id": 5800471,
+              "children": [
+                {
+                  "type": "instance",
+                  "componentId": 2803465,
+                  "id": 3200009,
+                  "attributes": "{\n\ttextAlign: \"center\",\n}",
+                  "children": [
+                    {
+                      "type": "instance",
+                      "componentId": 857559,
+                      "id": 6339022,
+                      "attributes": "{\n\ttitle: props.title,\n  subtitle: props.subtitle,\n  size: 4,\n  textAlign: \"center\",\n}",
+                      "isVisible": true,
+                      "children": []
+                    },
+                    {
+                      "type": "instance",
+                      "componentId": 6105710,
+                      "id": 5305405,
+                      "attributes": "{\n\tcontainer: true,\n \tjustifyContent: \"center\",\n}",
+                      "children": [
+                        {
+                          "type": "foreach",
+                          "id": 754456,
+                          "valName": "item",
+                          "indexName": "index",
+                          "objectName": "items",
+                          "children": [
+                            {
+                              "type": "instance",
+                              "componentId": 6105710,
+                              "id": 8886327,
+                              "attributes": "{\n\titem: true,\n  xs: 12,\n  md: \"auto\",\n  key: index,\n}",
+                              "children": [
+                                {
+                                  "type": "instance",
+                                  "componentId": 2803465,
+                                  "id": 4792034,
+                                  "attributes": "{\n\tpy: 2,\n  px: 3,\n}",
+                                  "children": [
+                                    {
+                                      "type": "element",
+                                      "tagName": "img",
+                                      "attributes": "{\n  src: item.image,\n \twidth: item.width,\n  alt: item.name,\n}",
+                                      "id": 4396883,
+                                      "isVisible": true,
+                                      "image": "",
+                                      "name": "",
+                                      "classNames": [],
+                                      "classNameExpressions": [],
+                                      "style": "",
+                                      "children": []
+                                    }
+                                  ],
+                                  "subtype": "external-instance",
+                                  "isVisible": true
+                                }
+                              ],
+                              "subtype": "external-instance",
+                              "isVisible": true
+                            }
+                          ],
+                          "isVisible": true,
+                          "objectType": "array"
+                        }
+                      ],
+                      "subtype": "external-instance",
+                      "isVisible": true
+                    }
+                  ],
+                  "subtype": "external-instance",
+                  "isVisible": true
+                }
+              ],
+              "subtype": "external-instance",
+              "isVisible": true,
+              "attributes": "{\n\n}"
+            }
+          ],
+          "isVisible": true
+        }
+      ],
+      "tags": [
+        "Clients",
+        "Popular"
+      ],
+      "isVisible": true,
+      "nameLibrary": "",
+      "description": "",
+      "muiStyle": "{\n\n}"
     },
     {
       "type": "component",

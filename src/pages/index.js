@@ -1,7 +1,7 @@
 import React from "react";
 import Meta from "./../components/Meta";
 import HeroSection from "./../components/HeroSection";
-import PricingSection from "./../components/PricingSection";
+import ClientsSection from "./../components/ClientsSection";
 import FeaturesSection from "./../components/FeaturesSection";
 import TestimonialsSection from "./../components/TestimonialsSection";
 import NewsletterSection from "./../components/NewsletterSection";
@@ -22,13 +22,13 @@ function IndexPage(props) {
         buttonColor="primary"
         buttonPath="/pricing"
       />
-      <PricingSection
-        bgColor="default"
-        size="medium"
+      <ClientsSection
+        bgColor="light"
+        size="normal"
         bgImage=""
         bgImageOpacity={1}
-        title="Pricing"
-        subtitle="Choose the plan that makes sense for you. All plans include a 14-day free trial."
+        title=""
+        subtitle=""
       />
       <FeaturesSection
         bgColor="default"

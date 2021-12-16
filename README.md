@@ -26,7 +26,7 @@ _Note: You can run just the front-end with `npm run start`, but `netlify dev` al
 This project uses the following libraries and services:
 - Framework - [Create React App](https://create-react-app.dev) with React Router
 - UI Kit - [Material UI](https://material-ui.com)
-- Authentication - [Firebase Auth](https://firebase.google.com/products/auth)
+- Authentication - TBD
 - Database - [Cloud Firestore](https://firebase.google.com/products/firestore)
 - Payments - [Stripe](https://stripe.com)
 - Newsletter - [Mailchimp](https://mailchimp.com)
@@ -72,7 +72,7 @@ function MyComponent() {
 <details>
 <summary><b>Authentication</b></summary>
 <p>
-  This project uses <a href="https://firebase.google.com">Firebase Auth</a> and includes a convenient <code>useAuth</code> hook (located in <code><a href="src/util/auth.js">src/util/auth.js</a></code>) that wraps Firebase and gives you common authentication methods. Depending on your needs you may want to edit this file and expose more Firebase functionality.
+  This project wasn't setup with a particular auth service in mind, but includes a <code>useAuth</code> hook (located in <code><a href="src/util/auth.js">src/util/auth.js</a></code>) that allows you to prototype auth flows. Before moving to production you'll want to edit that file to make calls to an actual authentication provider.
 
 ```js
 import { useAuth } from "./../util/auth.js";

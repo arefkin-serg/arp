@@ -6,28 +6,17 @@ import React, {
   createContext,
 } from "react";
 import queryString from "query-string";
+import fakeAuth from "fake-auth";
+
 import {
   getAuth,
   onAuthStateChanged,
   signOut as authSignOut,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  FacebookAuthProvider,
-  TwitterAuthProvider,
-  GithubAuthProvider,
-  sendEmailVerification,
-  checkActionCode,
-  applyActionCode,
-  getAdditionalUserInfo,
-  updateEmail as authUpdateEmail,
-  updateProfile as authUpdateProfile,
-  updatePassword as authUpdatePassword,
-  sendPasswordResetEmail as authSendPasswordResetEmail,
-  confirmPasswordReset as authConfirmPasswordReset,
+  signInWithCustomToken,
 } from "firebase/auth";
 import { firebaseApp } from "./firebase";
+import { apiRequest } from "./util";
+
 import { useUser, createUser, updateUser } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
@@ -36,12 +25,11 @@ import analytics from "./analytics";
 
 // Whether to merge extra user data from database into `auth.user`
 const MERGE_DB_USER = true;
-// Whether to send email verification on signup
-const EMAIL_VERIFICATION = true;
+
 // Whether to connect analytics session to `user.uid`
 const ANALYTICS_IDENTIFY = true;
 
-// Initialize Firebase auth
+// Initialize Firebase auth (required to read/write to Firestore)
 const auth = getAuth(firebaseApp);
 
 // Create a `useAuth` hook and `AuthProvider` that enables
@@ -72,22 +60,16 @@ function useAuthProvider() {
   // Connect analytics session to user
   useIdentifyUser(finalUser, { enabled: ANALYTICS_IDENTIFY });
 
-  // Handle response from auth functions (`signup`, `signin`, and `signinWithProvider`)
-  const handleAuth = async (response) => {
-    const { user } = response;
-    const { isNewUser } = getAdditionalUserInfo(response);
-
+  // Handle response from auth functions
+  const handleAuth = async (user) => {
     // Ensure Firebase user is ready before we continue
+    // We exchange an fake-auth token for Firebase token in `auth0.extended.onChange`
+    // so that we can make authenticated requests to Firestore.
     await waitForFirebase(user.uid);
 
-    // Create the user in the database if they are new
-    if (isNewUser) {
-      await createUser(user.uid, { email: user.email });
-      // Send email verification if enabled
-      if (EMAIL_VERIFICATION) {
-        sendEmailVerification(auth.currentUser);
-      }
-    }
+    // Create the user in the database
+    // fake-auth doesn't indicate if they are new so we attempt to create user every time
+    await createUser(user.uid, { email: user.email });
 
     // Update user in state
     setUser(user);
@@ -95,37 +77,46 @@ function useAuthProvider() {
   };
 
   const signup = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password).then(
-      handleAuth
-    );
+    return fakeAuth
+      .signup(email, password)
+      .then((response) => handleAuth(response.user));
   };
 
   const signin = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password).then(handleAuth);
+    return fakeAuth
+      .signin(email, password)
+      .then((response) => handleAuth(response.user));
   };
 
   const signinWithProvider = (name) => {
-    // Get provider by name ("google", "facebook", etc)
-    const provider = authProviders.find((p) => p.name === name).get();
-    return signInWithPopup(auth, provider).then(handleAuth);
+    return fakeAuth
+      .signinWithProvider(name)
+      .then((response) => handleAuth(response.user));
   };
 
   const signout = () => {
-    return authSignOut(auth);
+    // Remove custom Firebase token we set for writing to Firestore
+    authSignOut(auth);
+
+    return fakeAuth.signout();
   };
 
   const sendPasswordResetEmail = (email) => {
-    return authSendPasswordResetEmail(auth, email);
+    return fakeAuth.sendPasswordResetEmail(email);
   };
 
   const confirmPasswordReset = (password, code) => {
+    // [INTEGRATING AN AUTH SERVICE]: If not passing in "code" as the second
+    // arg above then make sure getFromQueryString() below has the correct
+    // url parameter name (it might not be "code").
+
     // Get code from query string object
-    const resetCode = code || getFromQueryString("oobCode");
-    return authConfirmPasswordReset(auth, resetCode, password);
+    const resetCode = code || getFromQueryString("code");
+    return fakeAuth.confirmPasswordReset(password, resetCode);
   };
 
   const updatePassword = (password) => {
-    return authUpdatePassword(auth.currentUser, password);
+    return fakeAuth.updatePassword(password);
   };
 
   // Update auth user and persist data to database
@@ -135,30 +126,35 @@ function useAuthProvider() {
 
     // Update auth email
     if (email) {
-      await authUpdateEmail(auth.currentUser, email);
+      await fakeAuth.updateEmail(email);
     }
 
     // Update built-in auth profile fields
     // These fields are renamed in `useFormatUser`, so when updating we
-    // need to make sure to use their original names (`displayName`, `photoURL`, etc)
+    // need to make sure to use their original names (`name`, `picture`, etc)
     if (name || picture) {
       let fields = {};
-      if (name) fields.displayName = name;
-      if (picture) fields.photoURL = picture;
-      await authUpdateProfile(auth.currentUser, fields);
+      if (name) fields.name = name;
+      if (picture) fields.picture = picture;
+      await fakeAuth.updateProfile(fields);
     }
 
     // Persist all data to the database
     await updateUser(user.uid, data);
 
     // Update user in state
-    setUser(auth.currentUser);
+    const currentUser = await fakeAuth.getCurrentUser();
+    setUser(currentUser);
   };
 
   useEffect(() => {
     // Subscribe to user on mount
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = fakeAuth.onChange(async ({ user }) => {
       if (user) {
+        // Authenticate with Firebase so we can read/write to Firestore
+        await setFirebaseToken();
+        await waitForFirebase(user.uid);
+
         setUser(user);
       } else {
         setUser(false);
@@ -188,18 +184,14 @@ function useFormatUser(user) {
     // Return if auth user is `null` (loading) or `false` (not authenticated)
     if (!user) return user;
 
-    // Create an array of user's auth providers by id (["password", "google", etc])
+    // Create an array of user's auth providers by id, such as ["password", "google", etc]
     // Components can read this to prompt user to re-auth with the correct provider
-    const providers = user.providerData.map(({ providerId }) => {
-      return authProviders.find((p) => p.id === providerId).name;
-    });
+    const providers = [user.provider];
 
     return {
       // Include full auth user data
       ...user,
-      // Alter the names of some fields
-      name: user.displayName,
-      picture: user.photoURL,
+
       // User's auth providers
       providers: providers,
       // Add `planId` (starter, pro, etc) if we have a `stripePriceId`
@@ -280,54 +272,12 @@ export const requireAuth = (Component) => {
   };
 };
 
-// Handle Firebase email link for reverting to original email after an email change
-export const handleRecoverEmail = async (code) => {
-  // Check that action code is valid
-  const info = await checkActionCode(auth, code);
-  // Revert to original email by applying action code
-  await applyActionCode(auth, code);
-  // Send password reset email so user can change their password in the case
-  // that someone else got into their account and changed their email.
-  await authSendPasswordResetEmail(auth, info.data.email);
-  // Return original email so it can be displayed by calling component
-  return info.data.email;
-};
-
-// Handle Firebase email link for verifying email
-export const handleVerifyEmail = (code) => {
-  return applyActionCode(auth, code);
-};
-
-const authProviders = [
-  {
-    id: "password",
-    name: "password",
-  },
-  {
-    id: "google.com",
-    name: "google",
-    get: () => new GoogleAuthProvider(),
-  },
-  {
-    id: "facebook.com",
-    name: "facebook",
-    get: () => {
-      const provider = new FacebookAuthProvider();
-      provider.setCustomParameters({ display: "popup" });
-      return provider;
-    },
-  },
-  {
-    id: "twitter.com",
-    name: "twitter",
-    get: () => new TwitterAuthProvider(),
-  },
-  {
-    id: "github.com",
-    name: "github",
-    get: () => new GithubAuthProvider(),
-  },
-];
+// Sign-in with a custom Firebase auth token
+function setFirebaseToken() {
+  return apiRequest("auth-firebase-token").then((token) => {
+    return signInWithCustomToken(auth, token);
+  });
+}
 
 // Wait for Firebase user to be initialized before resolving promise
 // and taking any further action (such as writing to the database)

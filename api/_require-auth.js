@@ -1,4 +1,4 @@
-const firebaseAdmin = require("./_firebase.js");
+const fakeAuth = require("fake-auth");
 
 // Middleware for requiring authentication and getting user
 const requireAuth = (fn) => async (event, context, callback) => {
@@ -18,7 +18,7 @@ const requireAuth = (fn) => async (event, context, callback) => {
 
   try {
     // Get user from token and add to event object
-    event.user = await firebaseAdmin.auth().verifyIdToken(accessToken);
+    event.user = fakeAuth.verifyAccessToken(accessToken);
 
     // Call route function passed into this middleware
     return fn(event, context, callback);

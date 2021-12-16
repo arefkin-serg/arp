@@ -11,7 +11,6 @@ import SettingsPage from "./settings";
 import LegalPage from "./legal";
 import { Switch, Route, Router } from "./../util/router";
 import PurchasePage from "./purchase";
-import FirebaseActionPage from "./firebase-action";
 import NotFoundPage from "./404";
 import Footer from "./../components/Footer";
 import "./../util/analytics";
@@ -56,12 +55,6 @@ function App(props) {
                 <Route exact path="/legal/:section" component={LegalPage} />
 
                 <Route exact path="/purchase/:plan" component={PurchasePage} />
-
-                <Route
-                  exact
-                  path="/firebase-action"
-                  component={FirebaseActionPage}
-                />
 
                 <Route component={NotFoundPage} />
               </Switch>
