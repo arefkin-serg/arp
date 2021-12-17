@@ -26,14 +26,16 @@
     "@stripe/stripe-js": "1.11.0",
     "stripe": "8.132.0",
     "analytics": "0.3.1",
-    "@analytics/google-analytics": "0.2.2"
+    "@analytics/google-analytics": "0.2.2",
+    "dotenv": "8.2.0",
+    "express": "4.17.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "stripe-webhook": "stripe listen --forward-to localhost:8888/api/stripe-webhook"
+    "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe-webhook"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -49,5 +51,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:8080"
 }

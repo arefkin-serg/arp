@@ -1,18 +1,17 @@
+const express = require("express");
 const requireAuth = require("./_require-auth.js");
 const { getUser, updateUser } = require("./_db.js");
 const stripe = require("./_stripe.js");
+const router = express.Router();
 
-exports.handler = requireAuth(async (event, context, callback) => {
-  const body = JSON.parse(event.body);
-  const user = event.user;
+router.post("/", requireAuth, async (req, res) => {
+  const body = req.body;
+  const user = req.user;
 
   if (!body.priceId) {
-    return callback(null, {
-      statusCode: 400,
-      body: JSON.stringify({
-        status: "error",
-        message: "No priceId is defined in request body",
-      }),
+    return res.status(400).send({
+      status: "error",
+      message: "No priceId is defined in request body",
     });
   }
 
@@ -57,21 +56,13 @@ exports.handler = requireAuth(async (event, context, callback) => {
     });
 
     // Return success response
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({ status: "success", data: session }),
-    });
+    res.send({ status: "success", data: session });
   } catch (error) {
     console.log("stripe-create-checkout-session error", error);
 
     // Return error response
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        status: "error",
-        code: error.code,
-        message: error.message,
-      }),
-    });
+    res.send({ status: "error", code: error.code, message: error.message });
   }
 });
+
+module.exports = router;

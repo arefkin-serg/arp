@@ -10,17 +10,15 @@ API_KEY=AIzaSyBkkFF0XhNZeWuDmOfEhsgdfX1VBG7WTas
 etc ...
 ```
 
-Install the Netlify CLI
-```
-npm install netlify-cli -g
-```
 Run the development server
 ```
-netlify dev
+npm run start
 ```
-When the above command completes you'll be able to view your website at `http://localhost:8888`
-
-_Note: You can run just the front-end with `npm run start`, but `netlify dev` also handles running your API endpoints (located in the `/api` directory)._
+In a separate terminal window run your API endpoints 
+```
+node api
+```
+When the above command completes you'll be able to view your website at `http://localhost:3000`
 
 ## 🥞 Stack
 This project uses the following libraries and services:
@@ -32,7 +30,7 @@ This project uses the following libraries and services:
 - Newsletter - [Mailchimp](https://mailchimp.com)
 - Contact Form - [Formspree](https://formspree.io)
 - Analytics - [Google Analytics](https://googleanalytics.com)
-- Hosting - [Netlify](https://netlify.com)
+- Hosting - TBD
 
 
 ## 📚 Guide
@@ -134,36 +132,7 @@ function ItemsPage(){
 <details>
 <summary><b>Deployment</b></summary>
 <p>
-Install the Netlify CLI
-
-```
-npm install netlify-cli -g
-```
-
-Link codebase to a Netlify project (choose the "create and deploy manually" option)
-
-```
-netlify init
-```
-
-Add each variable from your `.env` file to your Netlify project, including ones prefixed with "REACT_APP\_". You can also use the Netlify UI for this by going to your Site settings → Build & Deploy → Environment.
-
-```
-netlify env:set VARIABLE_NAME value
-```
-
-Build for production
-
-```
-npm run build
-```
-
-Then run this command to deploy to Netlify
-```
-netlify deploy
-```
-
-See the <a target="_blank" href="https://docs.netlify.com/cli/get-started/#manual-deploys">Netlify docs</a> for more details.
+This project wasn't setup with a specific web host in mind. Please follow the Create React App <a href="https://create-react-app.dev/docs/deployment">deployment docs</a> to learn how to deploy your project to various hosts.
 </p>
 </details>
 

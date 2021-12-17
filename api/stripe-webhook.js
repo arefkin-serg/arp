@@ -1,11 +1,13 @@
+const express = require("express");
 const { updateUserByCustomerId } = require("./_db.js");
 const stripe = require("./_stripe.js");
+const router = express.Router();
 
-exports.handler = async (event, context, callback) => {
-  const headers = event.headers;
+router.post("/", async (req, res) => {
+  const headers = req.headers;
 
   try {
-    const rawBody = event.body;
+    const rawBody = req.rawBody;
 
     const stripeEvent = stripe.webhooks.constructEvent(
       rawBody,
@@ -88,21 +90,13 @@ exports.handler = async (event, context, callback) => {
     }
 
     // Send success response
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({ status: "success" }),
-    });
+    res.send({ status: "success" });
   } catch (error) {
     console.log("stripe webhook error", error);
 
     // Send error response
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        status: "error",
-        code: error.code,
-        message: error.message,
-      }),
-    });
+    res.send({ status: "error", code: error.code, message: error.message });
   }
-};
+});
+
+module.exports = router;

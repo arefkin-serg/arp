@@ -1,10 +1,12 @@
+const express = require("express");
 const Mailchimp = require("mailchimp-api-v3");
+const router = express.Router();
 
 const mailchimpClient = new Mailchimp(process.env.MAILCHIMP_API_KEY);
 const audienceId = process.env.MAILCHIMP_AUDIENCE_ID;
 
-exports.handler = (event, context, callback) => {
-  const body = JSON.parse(event.body);
+router.post("/", (req, res) => {
+  const body = req.body;
 
   return mailchimpClient
     .request({
@@ -17,10 +19,7 @@ exports.handler = (event, context, callback) => {
       },
     })
     .then((result) => {
-      callback(null, {
-        statusCode: 200,
-        body: JSON.stringify({ status: "success" }),
-      });
+      res.send({ status: "success" });
     })
     .catch((error) => {
       console.log("newsletter error", error);
@@ -28,15 +27,11 @@ exports.handler = (event, context, callback) => {
       // If error due to email already in list then return success response
       // rather than an error (the user doesn't need to know).
       if (error.title === "Member Exists") {
-        return callback(null, {
-          statusCode: 200,
-          body: JSON.stringify({ status: "success" }),
-        });
+        return res.send({ status: "success" });
       }
 
-      callback(null, {
-        statusCode: 200,
-        body: JSON.stringify({ status: "error" }),
-      });
+      res.send({ status: "error" });
     });
-};
+});
+
+module.exports = router;

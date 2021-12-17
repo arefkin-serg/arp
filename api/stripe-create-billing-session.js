@@ -1,10 +1,12 @@
+const express = require("express");
 const requireAuth = require("./_require-auth.js");
 const { getUser } = require("./_db.js");
 const stripe = require("./_stripe.js");
+const router = express.Router();
 
-exports.handler = requireAuth(async (event, context, callback) => {
-  const body = JSON.parse(event.body);
-  const user = event.user;
+router.post("/", requireAuth, async (req, res) => {
+  const body = req.body;
+  const user = req.user;
 
   try {
     const { stripeCustomerId } = await getUser(user.uid);
@@ -16,21 +18,13 @@ exports.handler = requireAuth(async (event, context, callback) => {
     });
 
     // Return success response
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({ status: "success", data: session }),
-    });
+    res.send({ status: "success", data: session });
   } catch (error) {
     console.log("stripe-create-billing-session error", error);
 
     // Return error response
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        status: "error",
-        code: error.code,
-        message: error.message,
-      }),
-    });
+    res.send({ status: "error", code: error.code, message: error.message });
   }
 });
+
+module.exports = router;
