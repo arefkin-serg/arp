@@ -29,8 +29,17 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   brand: {
-    display: "block",
+    display: "flex",
     height: 32,
+    alignItems: "center",
+    color: "#fff",
+    textTransform: "uppercase",
+    textDecoration: "none",
+    fontWeight: 700
+  },
+  logo: {
+    height: 32,
+    marginRight: 10
   },
   social: {
     alignItems: "flex-end",
@@ -89,8 +98,9 @@ function Footer(props) {
       <Container>
         <div className={classes.wrapper}>
           <div className={`${classes.item} ${classes.left}`}>
-            <Link to="/">
-              <img src={logo} alt="Logo" className={classes.brand} />
+            <Link to="/" className={classes.brand}>
+              <img src={logo} alt="Logo" className={classes.logo} />
+              {props.name}
             </Link>
           </div>
           <div

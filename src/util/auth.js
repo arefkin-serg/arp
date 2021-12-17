@@ -243,7 +243,7 @@ function useMergeExtraData(user, { enabled }) {
 function useIdentifyUser(user, { enabled }) {
   useEffect(() => {
     if (enabled && user) {
-      analytics.identify(user.uid);
+      // analytics.identify(user.uid);
     }
   }, [user]);
 }

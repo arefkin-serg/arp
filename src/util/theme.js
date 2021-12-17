@@ -44,7 +44,7 @@ const themeConfig = {
       primary: {
         // Same as in light but we could
         // adjust color hue if needed
-        main: colors.indigo["500"],
+        main: "#7c3aed",
       },
       secondary: {
         main: colors.pink["500"],
@@ -60,7 +60,7 @@ const themeConfig = {
   common: {
     typography: {
       fontSize: 14,
-      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: 'system-ui,-apple-system, "Segoe UI", Roboto, Helvetica,Arial,sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
       // Uncomment to make button lowercase
       // button: { textTransform: "none" },
     },
@@ -128,8 +128,8 @@ export const ThemeProvider = (props) => {
 
   // Use stored dark mode with fallback to system preference
   const isDarkMode =
-    isDarkModeStored === undefined ? prefersDarkMode : isDarkModeStored;
-
+    isDarkModeStored === undefined ? true : isDarkModeStored;
+  console.log('isDarkMode', isDarkModeStored);
   // Get MUI theme object
   const themeName = isDarkMode ? "dark" : "light";
   const theme = getTheme(themeName);

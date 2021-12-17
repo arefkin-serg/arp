@@ -24,6 +24,15 @@ import { useDarkMode } from "./../util/theme";
 
 const useStyles = makeStyles((theme) => ({
   logo: {
+    display: 'flex',
+    alignItems: 'center',
+    textTransform: 'uppercase',
+    textDecoration: 'none',
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 20
+  },
+  logoImg: {
     height: 28,
     marginRight: theme.spacing(2),
   },
@@ -63,8 +72,9 @@ function Navbar(props) {
       <AppBar position="static" color="transparent" elevation={0}>
         <Container disableGutters={true}>
           <Toolbar>
-            <Link to="/">
-              <img src={logo} alt="Logo" className={classes.logo} />
+            <Link to="/" className={classes.logo}>
+              <img src={logo} alt="Logo" className={classes.logoImg} />
+              {props.name}
             </Link>
             <div className={classes.spacer} />
             <Hidden smUp={true} implementation="css">
