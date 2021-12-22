@@ -57,10 +57,11 @@ function AuthForm(props) {
       pass,
     }).catch((error) => {
       setPending(false);
+      const message = error.response.data.error;
       // Show error alert message
       props.onFormAlert({
         type: "error",
-        message: error.message,
+        message: message,
       });
     });
   };

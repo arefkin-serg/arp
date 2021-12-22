@@ -13,52 +13,45 @@ import { Switch, Route, Router } from "./../util/router";
 import PurchasePage from "./purchase";
 import NotFoundPage from "./404";
 import Footer from "./../components/Footer";
-import "./../util/analytics";
 import { AuthProvider } from "./../util/auth";
 import { ThemeProvider } from "./../util/theme";
-import { QueryClientProvider } from "./../util/db";
 
 function App(props) {
   return (
-    <QueryClientProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <Router>
-            <>
-              <Navbar
-                color="default"
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <>
+            <Navbar
+              color="default"
                 logo="./../assets/images/logo.svg"
                 name="Streaming.dev"
               // logoInverted="https://uploads.divjoy.com/logo-white.svg"
               />
 
-              <Switch>
-                <Route exact path="/" component={IndexPage} />
+            <Switch>
+              <Route exact path="/" component={IndexPage} />
 
-                <Route exact path="/about" component={AboutPage} />
+              <Route exact path="/about" component={AboutPage} />
 
-                <Route exact path="/faq" component={FaqPage} />
+              <Route exact path="/faq" component={FaqPage} />
 
-                <Route exact path="/contact" component={ContactPage} />
+              <Route exact path="/contact" component={ContactPage} />
 
-                <Route exact path="/pricing" component={PricingPage} />
+              <Route exact path="/pricing" component={PricingPage} />
 
-                <Route exact path="/dashboard" component={DashboardPage} />
+              <Route exact path="/dashboard" component={DashboardPage} />
 
-                <Route exact path="/auth/:type" component={AuthPage} />
+              <Route exact path="/auth/:type" component={AuthPage} />
 
-                <Route
-                  exact
-                  path="/settings/:section"
-                  component={SettingsPage}
-                />
+              <Route exact path="/settings/:section" component={SettingsPage} />
 
-                <Route exact path="/legal/:section" component={LegalPage} />
+              <Route exact path="/legal/:section" component={LegalPage} />
 
-                <Route exact path="/purchase/:plan" component={PurchasePage} />
+              <Route exact path="/purchase/:plan" component={PurchasePage} />
 
-                <Route component={NotFoundPage} />
-              </Switch>
+              <Route component={NotFoundPage} />
+            </Switch>
 
               <Footer
                 bgColor="light"
@@ -75,7 +68,6 @@ function App(props) {
           </Router>
         </AuthProvider>
       </ThemeProvider>
-    </QueryClientProvider>
   );
 }
 

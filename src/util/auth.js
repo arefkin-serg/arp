@@ -8,29 +8,15 @@ import React, {
 import queryString from "query-string";
 import fakeAuth from "fake-auth";
 
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut as authSignOut,
-  signInWithCustomToken,
-} from "firebase/auth";
-import { firebaseApp } from "./firebase";
-import { apiRequest } from "./util";
-
 import { useUser, createUser, updateUser } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
 import { getFriendlyPlanId } from "./prices";
-import analytics from "./analytics";
+import axios from 'axios';
 
 // Whether to merge extra user data from database into `auth.user`
 const MERGE_DB_USER = true;
-
-// Whether to connect analytics session to `user.uid`
-const ANALYTICS_IDENTIFY = true;
-
-// Initialize Firebase auth (required to read/write to Firestore)
-const auth = getAuth(firebaseApp);
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 // Create a `useAuth` hook and `AuthProvider` that enables
 // any component to subscribe to auth and re-render when it changes.
@@ -57,35 +43,29 @@ function useAuthProvider() {
   // Add custom fields and formatting to the `user` object
   finalUser = useFormatUser(finalUser);
 
-  // Connect analytics session to user
-  useIdentifyUser(finalUser, { enabled: ANALYTICS_IDENTIFY });
-
   // Handle response from auth functions
   const handleAuth = async (user) => {
-    // Ensure Firebase user is ready before we continue
-    // We exchange an fake-auth token for Firebase token in `auth0.extended.onChange`
-    // so that we can make authenticated requests to Firestore.
-    await waitForFirebase(user.uid);
-
-    // Create the user in the database
-    // fake-auth doesn't indicate if they are new so we attempt to create user every time
-    await createUser(user.uid, { email: user.email });
-
-    // Update user in state
+    const token = user.headers.authorization;
+    localStorage.setItem('auth_token', token)
+    
     setUser(user);
     return user;
   };
 
   const signup = (email, password) => {
-    return fakeAuth
-      .signup(email, password)
-      .then((response) => handleAuth(response.user));
+    return axios.post(`${baseUrl}/signup`, {
+      user: {
+        email, password
+      }
+    }).then(response => handleAuth(response))
   };
 
   const signin = (email, password) => {
-    return fakeAuth
-      .signin(email, password)
-      .then((response) => handleAuth(response.user));
+    return axios.post(`${baseUrl}/login`, {
+      user: {
+        email, password
+      }
+    }).then(response => handleAuth(response))
   };
 
   const signinWithProvider = (name) => {
@@ -95,10 +75,8 @@ function useAuthProvider() {
   };
 
   const signout = () => {
-    // Remove custom Firebase token we set for writing to Firestore
-    authSignOut(auth);
-
-    return fakeAuth.signout();
+    localStorage.clear();
+    setUser(false);
   };
 
   const sendPasswordResetEmail = (email) => {
@@ -148,21 +126,18 @@ function useAuthProvider() {
   };
 
   useEffect(() => {
-    // Subscribe to user on mount
-    const unsubscribe = fakeAuth.onChange(async ({ user }) => {
-      if (user) {
-        // Authenticate with Firebase so we can read/write to Firestore
-        await setFirebaseToken();
-        await waitForFirebase(user.uid);
+    console.log('Start application');
+    
+    const isAuth = localStorage.getItem('auth_token')
 
-        setUser(user);
-      } else {
-        setUser(false);
-      }
-    });
-
+    if (isAuth) {
+      setUser(true)
+    } else {
+      setUser(false)
+    }
+    
     // Unsubscribe on cleanup
-    return () => unsubscribe();
+    // return () => unsubscribe();
   }, []);
 
   return {
@@ -239,15 +214,6 @@ function useMergeExtraData(user, { enabled }) {
   }, [user, enabled, data, status, error]);
 }
 
-// Connect analytics session to current user
-function useIdentifyUser(user, { enabled }) {
-  useEffect(() => {
-    if (enabled && user) {
-      // analytics.identify(user.uid);
-    }
-  }, [user]);
-}
-
 // A Higher Order Component for requiring authentication
 export const requireAuth = (Component) => {
   return (props) => {
@@ -270,27 +236,6 @@ export const requireAuth = (Component) => {
     // Render component now that we have user
     return <Component {...props} />;
   };
-};
-
-// Sign-in with a custom Firebase auth token
-function setFirebaseToken() {
-  return apiRequest("auth-firebase-token").then((token) => {
-    return signInWithCustomToken(auth, token);
-  });
-}
-
-// Wait for Firebase user to be initialized before resolving promise
-// and taking any further action (such as writing to the database)
-const waitForFirebase = (uid) => {
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // Ensure we have a user with expected `uid`
-      if (user && user.uid === uid) {
-        resolve(user); // Resolve promise
-        unsubscribe(); // Prevent from firing again
-      }
-    });
-  });
 };
 
 const getFromQueryString = (key) => {

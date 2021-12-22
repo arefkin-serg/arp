@@ -1,7 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const authFirebaseToken = require("./auth-firebase-token.js");
-const newsletter = require("./newsletter.js");
 const stripeCreateBillingSession = require("./stripe-create-billing-session.js");
 const stripeWebhook = require("./stripe-webhook.js");
 const stripeCreateCheckoutSession = require("./stripe-create-checkout-session.js");
@@ -20,8 +18,6 @@ const jsonOptions = {
 app.use(express.json(jsonOptions));
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/auth-firebase-token", authFirebaseToken);
-app.use("/api/newsletter", newsletter);
 app.use("/api/stripe-create-billing-session", stripeCreateBillingSession);
 app.use("/api/stripe-webhook", stripeWebhook);
 app.use("/api/stripe-create-checkout-session", stripeCreateCheckoutSession);

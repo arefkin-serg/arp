@@ -12,6 +12,7 @@
     "@material-ui/lab": "4.0.0-alpha.60",
     "@stripe/stripe-js": "1.11.0",
     "analytics": "0.3.1",
+    "axios": "^0.24.0",
     "dotenv": "8.2.0",
     "express": "4.17.1",
     "fake-auth": "0.1.7",
