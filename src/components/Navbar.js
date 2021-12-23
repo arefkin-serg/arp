@@ -87,6 +87,13 @@ function Navbar(props) {
                 <MenuIcon />
               </IconButton>
             </Hidden>
+            
+            <Hidden xsDown={true} implementation="css">
+              <Button component={Link} to="/documentation" color="inherit">
+                Docs
+              </Button>
+            </Hidden>
+            
             <Hidden xsDown={true} implementation="css">
               {!auth.user && (
                 <Button component={Link} to="/auth/signin" color="inherit">
@@ -146,7 +153,7 @@ function Navbar(props) {
                   </Menu>
                 </>
               )}
-
+          
               <IconButton
                 color="inherit"
                 onClick={darkMode.toggle}
@@ -169,6 +176,10 @@ function Navbar(props) {
           className={classes.drawerList}
           onClick={() => setDrawerOpen(false)}
         >
+          <ListItem component={Link} to="/documentation" button={true}>
+            <ListItemText>Docs</ListItemText>
+          </ListItem>
+          
           {!auth.user && (
             <ListItem component={Link} to="/auth/signin" button={true}>
               <ListItemText>Sign in</ListItemText>

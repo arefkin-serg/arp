@@ -13,6 +13,7 @@ import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
 import { getFriendlyPlanId } from "./prices";
 import axios from 'axios';
+import jwt_decode from "jwt-decode";
 
 // Whether to merge extra user data from database into `auth.user`
 const MERGE_DB_USER = true;
@@ -127,7 +128,7 @@ function useAuthProvider() {
 
   useEffect(() => {
     console.log('Start application');
-    
+
     const isAuth = localStorage.getItem('auth_token')
 
     if (isAuth) {

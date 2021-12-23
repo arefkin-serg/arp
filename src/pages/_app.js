@@ -9,6 +9,7 @@ import DashboardPage from "./dashboard";
 import AuthPage from "./auth";
 import SettingsPage from "./settings";
 import LegalPage from "./legal";
+import DocsPage from './docs';
 import { Switch, Route, Router } from "./../util/router";
 import PurchasePage from "./purchase";
 import NotFoundPage from "./404";
@@ -31,6 +32,8 @@ function App(props) {
 
             <Switch>
               <Route exact path="/" component={IndexPage} />
+
+              <Route exact path="/documentation" component={DocsPage} />
 
               <Route exact path="/about" component={AboutPage} />
 
