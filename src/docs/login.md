@@ -1,10 +1,10 @@
-## Authenticates user **POST**
+## Authenticates user *POST* {#post}
 
 Login with your email and password in order to receive a token for use with Bearer Authentication
 
 #### Endpoint
 ```console
-"https://staging.api.streamgorilla.com/login" 
+https://staging.api.streamgorilla.com/login 
 
 ```
 

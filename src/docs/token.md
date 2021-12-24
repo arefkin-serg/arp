@@ -1,11 +1,11 @@
-## Token *GET*
+## Token *GET* {#get}
 
 
 Retrieve JWT for logged in user, corresponding to User#uid
 
 #### Endpoint
 ```console
-"https://staging.api.streamgorilla.com/token"
+https://staging.api.streamgorilla.com/token
 ```
 
 #### code 200 (Token retrieval successful)

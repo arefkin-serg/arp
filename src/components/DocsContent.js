@@ -1,15 +1,14 @@
-import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState} from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-// import remarkPrism from 'remark-prism'
-import remarkHighlightjs from 'remark-highlight.js'
+import remarkHighlightjs from 'remark-highlight.js';
+import remarkGfm from 'remark-gfm';
+import remarkHeadingId from 'remark-heading-id'
 import { makeStyles } from "@material-ui/core/styles";
-import { login, token, signup, logout } from '../docs';
+import { login, token, signup, logout, asset, streamList, streamStart, streamStop, streamCreate, streamFind } from '../docs';
 
 const useStyles = makeStyles((theme) => ({
   markdown: {
-    // backgroundColor: '#000',
-
     '& .language-console': {
       backgroundColor: '#ffffff10',
       padding: 10,
@@ -20,7 +19,8 @@ const useStyles = makeStyles((theme) => ({
     '& .language-json': {
       backgroundColor: '#ffffff10',
       display: 'block',
-      padding: 10
+      padding: 10,
+      overflow: 'hidden'
     },
 
     '& .hljs-attr': {
@@ -35,11 +35,35 @@ const useStyles = makeStyles((theme) => ({
     '& h2 em': {
       display: 'inline-flex',
       fontStyle: 'normal',
-      border: '1px solid #2196f3',
+      borderWidth: '1px',
+      borderStyle: 'solid',
       padding: '2px 5px',
       fontSize: 16,
       borderRadius: 4,
       marginLeft: 20
+    },
+    '& #get em': {
+      borderColor: '#2196f3',
+      backgroundColor: '#2196f330'
+    },
+    '& #post em': {
+      borderColor: '#4caf50',
+      backgroundColor: '#4caf5030'
+    },
+    '& #delete em': {
+      borderColor: '#e64a19',
+      backgroundColor: '#e64a1930'
+    },
+    '& #put em': {
+      borderColor: '#ffc107',
+      backgroundColor: '#ffc10730'
+    },
+    '& table': {
+      borderCollapse: 'collapse'
+    },
+    '& table th, & table td': {
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      padding: '10px 20px'
     }
   }
 }));
@@ -50,6 +74,12 @@ function getCurrentDoc(doc) {
     case 'token': return token;
     case 'signup': return signup;
     case 'logout': return logout;
+    case 'asset': return asset;
+    case 'streamList': return streamList;
+    case 'streamStart': return streamStart;
+    case 'streamStop': return streamStop;
+    case 'streamCreate': return streamCreate;
+    case 'streamFind': return streamFind;
     default:
       break;
   }
@@ -58,6 +88,8 @@ function getCurrentDoc(doc) {
 function DocsContent() {
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation();
+
   const [docs, setDocs] = useState(null);
 
   const fetchData = (doc) => {
@@ -69,7 +101,11 @@ function DocsContent() {
   }
 
   useEffect(() => {
-    fetchData('token')
+    if (location.hash) {
+      fetchData(location.hash.slice(1))
+    } else {
+      fetchData('token')
+    }
 
     const listener = history.listen((loc) => {
       const name = loc.hash.slice(1);
@@ -82,7 +118,7 @@ function DocsContent() {
   return (
     docs &&
     <div className={classes.markdown}>
-      <ReactMarkdown children={docs} remarkPlugins={[remarkHighlightjs]} />
+      <ReactMarkdown children={docs} remarkPlugins={[remarkHighlightjs, remarkHeadingId, remarkGfm]} />
     </div>
   )
 }

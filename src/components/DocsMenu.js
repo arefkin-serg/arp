@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState} from 'react'
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button } from '@material-ui/core';
@@ -9,6 +9,9 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     padding: 10,
+    position: 'sticky',
+    top: 15,
+    marginBottom: 13
   },
   box: {
     display: 'flex',
@@ -18,12 +21,14 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'flex-start',
     textTransform: 'none',
-    // paddingLeft: 0
+  },
+  active: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   title: {
     paddingLeft: 8,
     marginBottom: 10,
-
+    marginTop: 10
   },
   type: {
     display: 'flex',
@@ -48,6 +53,10 @@ const useStyles = makeStyles((theme) => ({
   delete: {
     borderColor: '#e64a19',
     backgroundColor: '#e64a1930'
+  }, 
+  put: {
+    borderColor: '#ffc107',
+    backgroundColor: '#ffc10730'
   }
 }));
 
@@ -70,7 +79,40 @@ const menu = [
       name: 'Creates new user',
       method: 'post',
       hash: 'signup'
-    }
+    }]
+  }, {
+    title: 'Assets',
+    items: [
+      {
+        name: 'Find asset by ID',
+        method: 'get',
+        hash: 'asset'
+      }
+    ]
+  }, {
+    title: 'Streams',
+    items: [
+      {
+        name: 'List streams',
+        method: 'get',
+        hash: 'streamList'
+      }, {
+        name: 'Create stream',
+        method: 'post',
+        hash: 'streamCreate',
+      }, {
+        name: 'Start stream',
+        method: 'put',
+        hash: 'streamStart'
+      }, {
+        name: 'Stop stream',
+        method: 'put',
+        hash: 'streamStop',
+      }, {
+        name: 'Find stream by ID',
+        method: 'get',
+        hash: 'streamFind'
+      }
     ]
   }
 ];
@@ -78,11 +120,18 @@ const menu = [
 
 function DocsMenu(props) {
   const { onRoute } = props;
-
+  const [active, setActive] = useState('token');
   const classes = useStyles();
 
   const handleClick = (path) => {
     onRoute(path);
+    setActive(path);
+
+    window.scrollBy({
+      top: -10000,
+      left: 0,
+      behavior: 'smooth'
+    });
   }
 
   return (
@@ -93,7 +142,7 @@ function DocsMenu(props) {
             {category.title}
           </Typography>
           {category.items.map(item => (
-            <Button className={classes.item} onClick={() => handleClick(item.hash)} key={item.name}>
+            <Button className={`${classes.item} ${active === item.hash ? classes.active : ''}`} onClick={() => handleClick(item.hash)} key={item.name}>
               <span className={`${classes.type} ${classes[item.method]}`}>{item.method}</span> {item.name}
             </Button>
           ))}
