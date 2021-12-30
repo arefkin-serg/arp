@@ -1,5 +1,5 @@
 const fakeAuth = require("fake-auth");
-
+const axios = require("axios");
 // Middleware for requiring authentication and getting user
 const requireAuth = async (req, res, next) => {
   // Respond with error if no authorization header
@@ -15,8 +15,15 @@ const requireAuth = async (req, res, next) => {
 
   try {
     // Get user from token and add to req object
-    req.user = fakeAuth.verifyAccessToken(accessToken);
-
+    const resp = await axios.get(`${process.env.BASE_URL}/user`, {
+      headers: {
+        authorization: `Bearer ${accessToken}`
+      }
+    });
+    
+    req.user = resp.data;
+    
+    
     // Call route function passed into this middleware
     return next();
   } catch (error) {

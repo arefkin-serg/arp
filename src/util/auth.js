@@ -19,6 +19,9 @@ import jwt_decode from "jwt-decode";
 const MERGE_DB_USER = true;
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
+const api = axios.create({
+  baseURL: baseUrl
+})
 // Create a `useAuth` hook and `AuthProvider` that enables
 // any component to subscribe to auth and re-render when it changes.
 const authContext = createContext();
@@ -47,14 +50,14 @@ function useAuthProvider() {
   // Handle response from auth functions
   const handleAuth = async (user) => {
     const token = user.headers.authorization;
-    localStorage.setItem('auth_token', token)
-    
+    localStorage.setItem('auth_token', token.split(" ")[1])
+    localStorage.setItem('email', user.data.data.attributes.email)
     setUser(user);
     return user;
   };
 
   const signup = (email, password) => {
-    return axios.post(`${baseUrl}/signup`, {
+    return api.post(`/signup`, {
       user: {
         email, password
       }
@@ -62,7 +65,7 @@ function useAuthProvider() {
   };
 
   const signin = (email, password) => {
-    return axios.post(`${baseUrl}/login`, {
+    return api.post(`/login`, {
       user: {
         email, password
       }
@@ -176,7 +179,7 @@ function useFormatUser(user) {
       }),
       // Add `planIsActive: true` if subscription status is active or trialing
       planIsActive: ["active", "trialing"].includes(
-        user.stripeSubscriptionStatus
+        user.stripe_status
       ),
     };
   }, [user]);

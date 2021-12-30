@@ -7,13 +7,13 @@ const router = express.Router();
 router.post("/", requireAuth, async (req, res) => {
   const body = req.body;
   const user = req.user;
-
+  
   try {
-    const { stripeCustomerId } = await getUser(user.uid);
+    const { stripe_customer_id } = user.data.attributes;
 
     // Create a billing portal session
     const session = await stripe.billingPortal.sessions.create({
-      customer: stripeCustomerId,
+      customer: stripe_customer_id,
       return_url: body.returnUrl,
     });
 

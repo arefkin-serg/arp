@@ -52,37 +52,25 @@ function PricingSection(props) {
     {
       id: "starter",
       name: "Starter",
-      price: "10",
+      price: "50",
       perks: [
-        "Lorem ipsum dolor sit amet",
-        "Consectetur adipiscing elit",
-        "Integer molestie lorem at massa",
+        "1 stream"
       ],
     },
     {
       id: "pro",
       name: "Pro",
-      price: "20",
+      price: "99",
       perks: [
-        "Lorem ipsum dolor sit amet",
-        "Consectetur adipiscing elit",
-        "Integer molestie lorem at massa",
-        "Faucibus porta lacus fringilla vel",
-        "Aenean sit amet erat nunc",
+        "3 steams"
       ],
     },
     {
       id: "business",
       name: "Business",
-      price: "50",
+      price: "199",
       perks: [
-        "Lorem ipsum dolor sit amet",
-        "Consectetur adipiscing elit",
-        "Integer molestie lorem at massa",
-        "Faucibus porta lacus fringilla vel",
-        "Aenean sit amet erat nunc",
-        "Lorem ipsum dolor sit amet",
-        "Consectetur adipiscing elit",
+        "5 streams"
       ],
     },
   ];

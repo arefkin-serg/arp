@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-start',
     textTransform: 'none',
     display: 'flex',
-    color: "#fff",
+    color: 'inherit',
     textDecoration: 'none',
     marginBottom: 15
   },

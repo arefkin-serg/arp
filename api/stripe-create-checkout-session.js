@@ -16,22 +16,22 @@ router.post("/", requireAuth, async (req, res) => {
   }
 
   try {
-    let { email, stripeCustomerId } = await getUser(user.uid);
+    let { email, stripe_customer_id } = user.data.attributes;
 
     // If user does not already have a stripeCustomerId then create a customer in Stripe
-    if (!stripeCustomerId) {
+    if (!stripe_customer_id) {
       const customer = await stripe.customers.create({ email: email });
-
+      
       await updateUser(user.uid, {
-        stripeCustomerId: customer.id,
+        stripe_customer_id: customer.id,
       });
 
-      stripeCustomerId = customer.id;
+      stripe_customer_id = customer.id;
     }
 
     // Create a checkout session
     const session = await stripe.checkout.sessions.create({
-      customer: stripeCustomerId,
+      customer: stripe_customer_id,
       payment_method_types: ["card"],
       subscription_data: {
         // Use trial period set for this priceId (if there is one)

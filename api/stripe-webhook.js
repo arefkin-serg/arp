@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
         const subscription = await stripe.subscriptions.retrieve(
           object.subscription
         );
-
+        console.log("checkout.session.completed")
         // Update the current user
         await updateUserByCustomerId(object.customer, {
           stripeSubscriptionId: subscription.id,
@@ -47,6 +47,7 @@ router.post("/", async (req, res) => {
             stripeSubscriptionStatus: "active",
           });
         }
+        console.log("invoice.paid")
 
         break;
 
@@ -55,7 +56,8 @@ router.post("/", async (req, res) => {
         await updateUserByCustomerId(object.customer, {
           stripeSubscriptionStatus: "past_due",
         });
-
+        console.log("invoice.payment_failed")
+        
         break;
 
       case "customer.subscription.updated":
@@ -63,6 +65,7 @@ router.post("/", async (req, res) => {
           stripePriceId: object.items.data[0].price.id,
           stripeSubscriptionStatus: object.status,
         });
+        console.log("customer.subscription.updated")
 
         // 💡 You could also read "cancel_at_period_end" if you'd like to email user and learn why they cancelled
         // or convince them to renew before their subscription is deleted at end of payment period.
@@ -76,6 +79,7 @@ router.post("/", async (req, res) => {
         await updateUserByCustomerId(object.customer, {
           stripeSubscriptionStatus: "canceled",
         });
+        console.log("customer.subscription.deleted")
 
         break;
 
@@ -83,7 +87,7 @@ router.post("/", async (req, res) => {
         // This event happens 3 days before a trial ends
         // 💡 You could email user letting them know their trial will end or you can have Stripe do that
         // automatically 7 days in advance: https://dashboard.stripe.com/settings/billing/automatic
-
+        console.log("customer.subscription.trial_will_end");
         break;
 
       // no default
