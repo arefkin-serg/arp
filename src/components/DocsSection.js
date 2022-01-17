@@ -7,12 +7,13 @@ import Box from "@material-ui/core/Box";
 import DocsMenu from "./DocsMenu";
 import DocsContent from "./DocsContent";
 import SwaggerParser from "@apidevtools/swagger-parser";
+import CONFIG from '../config';
 
 function DocsSection(props) {
   const [docs, setDocs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const baseUrl = CONFIG.baseUrl;
 
   const parserData = async (data) => {
       try {

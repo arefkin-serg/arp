@@ -14,13 +14,13 @@ import PageLoader from "./../components/PageLoader";
 import { getFriendlyPlanId } from "./prices";
 import axios from 'axios';
 import jwt_decode from "jwt-decode";
+import CONFIG from '../config';
 
 // Whether to merge extra user data from database into `auth.user`
 const MERGE_DB_USER = true;
-const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const api = axios.create({
-  baseURL: baseUrl
+  baseURL: CONFIG.baseUrl
 })
 // Create a `useAuth` hook and `AuthProvider` that enables
 // any component to subscribe to auth and re-render when it changes.

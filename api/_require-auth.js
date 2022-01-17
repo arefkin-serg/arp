@@ -15,7 +15,7 @@ const requireAuth = async (req, res, next) => {
 
   try {
     // Get user from token and add to req object
-    const resp = await axios.get(`${process.env.BASE_URL}/user`, {
+    const resp = await axios.get(`https://staging.api.streamgorilla.com/user`, {
       headers: {
         authorization: `Bearer ${accessToken}`
       }
